@@ -1,7 +1,11 @@
 # Parallel Computing B-PB20000178 李笑
 ## Lab 1 - OpenMP及CUDA实验环境的搭建
+
+以下两张截图是我个人电脑的配置：
 ![](images/config2.png)
 ![](images/config1.png)
+
+
 
 
 ## Lab 2 - 排序算法的并行及优化（验证）
