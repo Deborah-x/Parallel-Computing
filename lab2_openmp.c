@@ -55,7 +55,7 @@ void merge(int *arr, int l, int m, int r) {
     free(R);
 }
  
-void mergeSort(int *arr, int l, int r) {
+void parallel_mergeSort(int *arr, int l, int r) {
     if (l < r) {
         // Calculate mid-point
         int m = l + (r - l) / 2;
@@ -64,16 +64,30 @@ void mergeSort(int *arr, int l, int r) {
         #pragma omp parallel sections
         {
             #pragma omp section
-            mergeSort(arr, l, m);
+            parallel_mergeSort(arr, l, m);
 
             #pragma omp section
-            mergeSort(arr, m + 1, r);
+            parallel_mergeSort(arr, m + 1, r);
         }
  
         // Merge sorted sub-arrays
         merge(arr, l, m, r);
     }
 }
+
+void no_parallel_mergeSort(int *arr, int l, int r) {
+    if (l < r) {
+        // Calculate mid-point
+        int m = l + (r - l) / 2;
+ 
+        no_parallel_mergeSort(arr, l, m);
+        no_parallel_mergeSort(arr, m + 1, r);
+ 
+        // Merge sorted sub-arrays
+        merge(arr, l, m, r);
+    }
+}
+
 
 int main() {
     int arr[ARRAY_SIZE];
@@ -86,29 +100,21 @@ int main() {
         arr[i] = rand() % 100000;
     }
 
-    clock_t start, end;
-    double cpu_time_used;
+    clock_t start1, end1;
+    start1 = omp_get_wtime();
+    for(int i = 0; i < 1000; i++){
+        parallel_mergeSort(arr, 0, ARRAY_SIZE - 1);
+    }
+    end1 = omp_get_wtime();
+    printf("Parallel time: %ld \n", end1 - start1);
 
-    start = clock();  // Start the timer
-
-    // int arr[] = {38, 27, 43, 3, 9, 82, 10};
-    // int n = sizeof(arr) / sizeof(arr[0]);
-
-    // Sort array using parallel merge sort
-    mergeSort(arr, 0, ARRAY_SIZE - 1);
-
-    // Print sorted array
-    // printf("Sorted array: ");
-    // for (int i = 0; i < ARRAY_SIZE; i++) {
-    //     printf("%d ", arr[i]);
-    // }
-    // printf("\n");
-
-    end = clock();  // Stop the timer
-
-    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;  // Calculate the elapsed time
-
-    printf("Elapsed time: %f seconds\n", cpu_time_used);
+    clock_t start2, end2;
+    start2 = omp_get_wtime();
+    for(int i = 0; i < 1000; i++){
+        no_parallel_mergeSort(arr, 0, ARRAY_SIZE - 1);
+    }
+    end2 = omp_get_wtime();
+    printf("Serial time: %ld \n", end2 - start2);
 
     return 0;
 }
