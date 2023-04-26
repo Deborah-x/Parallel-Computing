@@ -1,67 +1,91 @@
-#include <stdio.h>
+#include <omp.h> 
+#include <stdio.h> 
 #include <stdlib.h>
-#include <omp.h>
+#include <math.h>
 #include <time.h>
 
-#define N 100
+static void matMultCPU_serial(const float* a, const float* b, float* c, int n)
+{
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			double t = 0;
+			for (int k = 0; k < n; k++)
+			{
+				t += (double)a[i * n + k] * b[k * n + j];
+			}
+			c[i * n + j] = t;
+		}
+	}
+}
 
-void multiply(double A[][N], double B[][N], double C[][N]){
-    int i, j, k;
-    double sum;
-    for (i = 0; i < N; i++) {
-        for (j = 0; j < N; j++) {
-            sum = 0.0;
-            for (k = 0; k < N; k++) {
-                sum += A[i][k] * B[k][j];
-            }
-            C[i][j] = sum;
-        }
-    }
+static void matMultCPU_parallel(const float* a, const float* b, float* c, int n)
+{
+#pragma omp parallel for schedule(dynamic)
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			double t = 0;
+			for (int k = 0; k < n; k++)
+			{
+				t += (double)a[i * n + k] * b[k * n + j];
+			}
+			c[i * n + j] = t;
+		}
+	}
 }
 
 
-void parallel_multiply(double A[][N], double B[][N], double C[][N]){
-    clock_t start, end;
-    start = omp_get_wtime();  // Start the timer
-    // Perform the matrix multiplication using parallel computing
-    #pragma omp parallel for
-    for(int i = 0; i < 10000; i++){
-        multiply(A, B, C);
-    }
-    end = omp_get_wtime();  // Stop the timer
+void genMat(float* arr, int n)
+{
+	int i, j;
 
-    printf("Parallel time: %ld \n", end - start);
+	for (i = 0; i < n; i++)
+	{
+		for (j = 0; j < n; j++)
+		{
+			arr[i * n + j] = (float)rand() / RAND_MAX;
+		}
+	}
 }
 
-void no_parallel_multiply(double A[][N], double B[][N], double C[][N]){
-    clock_t start, end;
-    start = omp_get_wtime();  // Start the timer
-    for(int i = 0; i < 10000; i++){
-        multiply(A, B, C);
-    }
-    end = omp_get_wtime();  // Stop the timer
 
-    printf("Serial time: %ld \n", end - start);
+
+int main(int argc, char** argv)
+{
+	// Init matrix
+	float* a, * b, * c, * d;
+	int n = 1000;
+	if (argc == 2) n = atoi(argv[1]);
+	a = (float*)malloc(sizeof(float) * n * n);
+	b = (float*)malloc(sizeof(float) * n * n);
+	c = (float*)malloc(sizeof(float) * n * n);
+	d = (float*)malloc(sizeof(float) * n * n);
+
+	genMat(a, n);
+	genMat(b, n);
+
+	clock_t start, stop;
+	start = omp_get_wtime();
+	////// calculation code here ///////
+
+	matMultCPU_serial(a, b, c, n);
+
+	////// end code  ///////
+	stop = omp_get_wtime();
+	printf("Sequential matrix multiply time: %f seconds\n", (double)stop - start);
+
+	start = omp_get_wtime();
+	////// calculation code here ///////
+
+	matMultCPU_parallel(a, b, d, n);
+
+	////// end code  ///////
+	stop = omp_get_wtime();
+	printf("Parallel matrix multiply time: %f seconds\n", (double)stop - start);
+
+	return 0;
 }
 
-int main() {
-    
-
-    
-
-    int i, j;
-    double A[N][N], B[N][N], C[N][N];
-    
-    // Initialize the matrices A and B with random values
-    for (i = 0; i < N; i++) {
-        for (j = 0; j < N; j++) {
-            A[i][j] = (double) rand() / RAND_MAX;
-            B[i][j] = (double) rand() / RAND_MAX;
-        }
-    }
-    parallel_multiply(A, B, C);
-    no_parallel_multiply(A, B, C);
-    
-
-    return 0;
-}

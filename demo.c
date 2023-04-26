@@ -11,22 +11,22 @@ void sum(){
 
 void parallel(){
     clock_t start, end;
-    start = clock();
+    start = omp_get_wtime();
     # pragma omp parallel for
     for(int i = 0; i < 100; i++){
         sum();
     }
-    end = clock();
+    end = omp_get_wtime();
     printf("Parallel time: %ld \n", end - start);
 }
 
 void no_parallel(){
     clock_t start, end;
-    start = clock();
+    start = omp_get_wtime();
     for(int i = 0; i < 100; i++){
         sum();
     }
-    end = clock();
+    end = omp_get_wtime();
     printf("Serial time: %ld \n", end - start);
 }
 

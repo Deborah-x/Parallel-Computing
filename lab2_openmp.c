@@ -76,23 +76,33 @@ int main() {
     }
     int n = sizeof(arr) / sizeof(arr[0]);
   
+    double start_time, end_time;
+
     // Sequential merge sort
-    double start_time = omp_get_wtime();
-    merge_sort(arr, 0, n - 1);
-    double end_time = omp_get_wtime();
+    float sum1, sum2, epoch=1; 
+    for(int i = 0; i < epoch; i++){
+        start_time = omp_get_wtime();
+        merge_sort(arr, 0, n - 1);
+        end_time = omp_get_wtime();
+        sum1 += end_time - start_time;
+    }
+    
   
-    printf("Sequential merge sort time: %f seconds\n", end_time - start_time);
+    printf("Sequential merge sort time: %f seconds\n", sum1/epoch);
   
     // Parallel merge sort
-    start_time = omp_get_wtime();
-    #pragma omp parallel
-    {
-        #pragma omp single
-        merge_sort(arr, 0, n - 1);
+    for(int i = 0; i < epoch; i++){
+        start_time = omp_get_wtime();
+        #pragma omp parallel
+        {
+            #pragma omp single
+            merge_sort(arr, 0, n - 1);
+        }
+        end_time = omp_get_wtime();
+        sum2 += end_time - start_time;
     }
-    end_time = omp_get_wtime();
   
-    printf("Parallel merge sort time: %f seconds\n", end_time - start_time);
+    printf("Parallel merge sort time: %f seconds\n", sum2/epoch);
         
     return 0;
 }
