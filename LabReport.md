@@ -1,15 +1,23 @@
 # Parallel Computing B-PB20000178 李笑
 ## Lab 1 - OpenMP及CUDA实验环境的搭建
+由于我的电脑配置了双系统，所以接下来会展示在不同系统中配置 OpenMP 和 Cuda 的过程。在课程结束后，我也会将代码开源在[https://github.com/Deborah-x/Parallel-computing](https://github.com/Deborah-x/Parallel-computing)
 
+### Windows
 以下两张截图是我个人电脑的配置：
 ![](images/config2.png)
 ![](images/config1.png)
 
-切换到`Ubuntu20.04`进行后续实验，通过命令行查看配置：
+在
+
+#### 配置OpenMP
+
+#### 配置Cuda
+
+### Ubuntu 20.04
+在`Ubuntu20.04`环境中，我们可以通过命令行查看配置：
 ![](images/CPU.png)
 
-
-### 安装OpenMP
+#### 配置OpenMP
 步骤：
 1. 快捷键`Ctrl+Atl+T`打开终端
 2. 在终端输入`sudo apt-get install libomp-dev`安装OpenMP
@@ -20,7 +28,7 @@
 ![](images/OpenMP.png)
 
 
-### 安装CUDA
+#### 配置CUDA
 配置前：
 ![](images/CUDA_before.png)
 上图信息表明，我的电脑装有NVIDIA显卡，但是没有安装显卡驱动
