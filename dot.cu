@@ -11,7 +11,7 @@ __global__ void Dot(int *a, int *b, int *c) // 明 Kernel函数
     __shared__ int temp[N]; // 声明在共享内存中的变量
     temp[threadIdx.x] = a[threadIdx.x] * b[threadIdx.x];    // Kernel 函数中利用 threadIdx.x获得线程索引号
                                                             //threadIdx 是内建变量，它指定 block 内thread索引号
-    __syncthreads();
+    __syncthreads();    // 线程同步，确保线程模块中每个线程都执行完前面的语句才会执行下一条语句
     if(0 == threadIdx.x)
     {
         int sum = 0;
@@ -70,8 +70,8 @@ int main() {
 }
 
 /* Command and Output: 
-xiaoli@xiaoli-KLVC-WXX9:~/Project/Parallel-computing$ nvcc test.cu -o test
-xiaoli@xiaoli-KLVC-WXX9:~/Project/Parallel-computing$ ./test 
+xiaoli@xiaoli-KLVC-WXX9:~/Project/Parallel-computing$ nvcc dot.cu -o dot
+xiaoli@xiaoli-KLVC-WXX9:~/Project/Parallel-computing$ ./dot 
 Array a[N]: 
 3 6 7 5 3 5 6 2 9 1 
 Array b[N]: 
@@ -80,8 +80,8 @@ Array b[N]:
 sum Calculated on Device: 168
 sum Calculated on Host: 168
 Device to Host: a * b = 168
-xiaoli@xiaoli-KLVC-WXX9:~/Project/Parallel-computing$ nvprof ./test
-==10285== NVPROF is profiling process 10285, command: ./test
+xiaoli@xiaoli-KLVC-WXX9:~/Project/Parallel-computing$ nvprof ./dot
+==10285== NVPROF is profiling process 10285, command: ./dot
 Array a[N]: 
 3 6 7 5 3 5 6 2 9 1 
 Array b[N]: 
@@ -90,7 +90,7 @@ Array b[N]:
 sum Calculated on Device: 168
 sum Calculated on Host: 168
 Device to Host: a * b = 168
-==10285== Profiling application: ./test
+==10285== Profiling application: ./dot
 ==10285== Profiling result:
             Type  Time(%)      Time     Calls       Avg       Min       Max  Name
  GPU activities:   94.03%  56.426us         1  56.426us  56.426us  56.426us  Dot(int*, int*, int*)

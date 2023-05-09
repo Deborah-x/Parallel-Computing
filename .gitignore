@@ -1,6 +1,7 @@
 output.exe
 output
 test
+config
 mpi_program
 .vscode/
 README.pdf
