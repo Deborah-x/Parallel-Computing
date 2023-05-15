@@ -5,3 +5,6 @@ config
 mpi_program
 .vscode/
 README.pdf
+.VSCodeCounter
+matlab_sar
+imageProcessing

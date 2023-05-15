@@ -31,13 +31,12 @@ int main()
     printf("并行处理时间 : %lf s\n", omp_time_end - omp_time_sta);
     printf("串行处理时间 : %lf s\n", time_end - time_sta);
     printf("-------------------\n");
-    printf("\n\n");
-    //输出排序后的数组
+    // 输出排序后的数组
     // printf("-------------------\n");
     // printf("The final data1 : ");
-    //print(data1, n);
+    // print(data1, n);
     // printf("The final data2 : ");
-    // print(data2,n);
+    // print(data2, n);
     // printf("-------------------\n");
     // printf("\n\n");
     return 0;

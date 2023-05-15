@@ -96,7 +96,7 @@ $ export LD_LIBRARY_PATH=/usr/local/cuda-10.1/lib64\
 
 
 ## Lab 2 - 排序算法的并行及优化（验证）
-### OpenMP
+### OpenMP: mergesort
 在这个实验中我们对一个 10000000 维的 int 型数组进行归并排序，数组通过`rand()`进行随机初始化。根据我们先前学过的归并算法写出归并排序的非并行版本，并可以从中发现归并排序具有显然的并行条件——每次递归划分为两个数组，我们可以将两个数组放在不同cpu上运行以实现并行效果。
 
 为达到上述目的，我们首先在主函数中加入`omp_set_num_threads(8)`用来设定我们需要使用的线程数（这里设定为8因为我的设备是4核8线程）。然后我们再想办法对 `merge_sort()` 的递归并行处理。显然我们可以将 `merge_sort()` 中两次递归直接用 `#pragma omp sections` 进行并行，但每次启动线程会消耗大量的常数时间，在 low 和 high 相差很小的时候，并行递归的开销远大于串行递归。于是我们对并行版本的快速排序进行优化，使用 if 判断，只有当 `high-low>dx` 时才并行递归，否则直接串行递归。
@@ -197,14 +197,76 @@ delete[] temp;
 
 计算得加速比为 2.73 。
 
-### Cuda
+### OpenMP: quicksort
+串行的 `quickSort()` 实现比较简单
+```C
+void quickSort(int *a, int sta, int end){
+    if (sta < end){
+        int mid = partition(a, sta, end);
+        quickSort(a, sta, mid - 1);
+        quickSort(a, mid + 1, end);
+    }
+}
+```
+其中 `partition()` 被用来划分数组，并返回 pivot 的下标，pivot 左边的数比它小右边的数比它大。
+
+并行的 `quickSort_parallel()` 主要以下函数辅助实现
+```C
+void quickSort_parallel_internal(int *a, int left, int right, int cutoff){
+    int i = left, j = right;
+    int tmp;
+    int pivot = a[(left + right) / 2];
+    //进行数组分割，分成两部分（符合左小右大）
+    while (i <= j)
+    {
+        while (a[i] < pivot)
+            i++;
+        while (a[j] > pivot)
+            j--;
+        if (i <= j){
+            tmp = a[i];
+            a[i] = a[j];
+            a[j] = tmp;
+            i++;
+            j--;
+        }
+    }
+    if (((right - left) < cutoff)){
+        if (left < j){
+            quickSort_parallel_internal(a, left, j, cutoff);
+        }
+        if (i < right){
+            quickSort_parallel_internal(a, i, right, cutoff);
+        }
+    }
+    else{
+      	//对两部分再进行并行的线程排序
+        #pragma omp task
+        {
+            quickSort_parallel_internal(a, left, j, cutoff);
+        }
+        #pragma omp task
+        {
+            quickSort_parallel_internal(a, i, right, cutoff);
+        }
+    }
+}
+```
+task是“动态”定义任务的，在运行过程中，只需要使用task就会定义一个任务，任务就会在一个线程上去执行，那么其它的任务就可以并行的执行。可能某一个任务执行了一半的时候，或者甚至要执行完的时候，程序可以去创建第二个任务，任务在一个线程上去执行，一个动态的过程。
+
+输出结果为
+![](images/lab2_openmp_quicksort.png)
+
+计算得加速比为 4.36 。
+
+<!-- ### Cuda
 Cuda 程序执行的处理流程：
 1. 分配内存空间和显存空间
 2. 初始化内存空间
 3. 将要计算的数据从 Host 内存复制到 GPU 内存上
 4. 执行 Kernel 计算
 5. 将计算后 GPU 内存上的数据复制到 Host 内存上
-6. 处理复制到 Host 内存上的数据
+6. 处理复制到 Host 内存上的数据 -->
 
 
 
@@ -253,8 +315,42 @@ static void matMultCPU_parallel(const float* a, const float* b, float* c, int n)
 计算得加速比为 3 。
 
 ### Cuda
+在main函数中对矩阵进行随机初始化，并在 GPU 上开辟对应大小的空间，将数据从 Host 复制到 Device 上进行矩阵乘法计算。
+
+GPU 上主要计算步骤如下，给不同线程分配不同的计算任务，最后再合并
+```C
+__global__ void matrixMulGlobalKernel(int* pfMatrixA, int* pfMatrixB, int* pfMatrixC, int m, int n, int k)
+{
+    int nRow = blockIdx.y * blockDim.y + threadIdx.y;
+    int nCol = blockIdx.x * blockDim.x + threadIdx.x;
+    int fCVal = 0;
+
+    if (nRow < m && nCol < n) {
+        for (int i = 0; i < k; ++i) {
+            fCVal += pfMatrixA[nRow * k + i] * pfMatrixB[i * n + nCol];
+        }
+        pfMatrixC[nRow * n + nCol] = fCVal;
+    }
+
+    // __syncthreads();
+    // if((threadIdx.x == 0) && (threadIdx.y == 0) && (blockIdx.x == 0) && (blockIdx.y == 0)) {
+    //     for(int i = 0; i <N*N; i++) {
+    //         printf("%d ", pfMatrixC[i]);
+    //         if(i % N == N-1) 
+    //             printf("\n");
+    //     }
+    //     printf("\n");
+    // }
+    
+}
+```
+代码中部分注释掉的内容为前期调试输出内容，确保了在 CPU 和 GPU 上矩阵乘法运行的正确性和一致性，后期为了输出的简洁性我们将其注释掉。
+
+下图示三次矩阵乘法运算的维度依次为 $10\times10$, $100\times100$，$1000\times1000$ ，我们可以看到$10\times10$时使用 GPU 运算所花时间比 CPU 要长，原因是 GPU 花在线程开辟和处理上的时间不及它并行所节省的时间。当我们加大矩阵的维数，GPU 计算所花时间会远远小于 CPU 计算所花时间。加速比依次为 0，38，1173，886887。
+![](images/lab3_cuda.png)
 
 ## Lab 4 - 快速傅里叶变换的并行实现（验证）
+### OpenMP
 傅里叶变换常用于加速多项式乘法，而常规的快速傅里叶变换（原理略）通常是使用递归实现的，使用并行优化的难度比较高。因此，我在这里实现了非迭代的快速傅里叶版本：先预处理每个位置上元素变换后的位置（每个位置分治后的最终位置为其二进制翻转后得到的位置），然后先将所有元素移到变换后的位置之后直接循环合并。
 
 找变换位置这里其实有一个经典算法叫雷德算法，又被称作蝴蝶变换；不过我没有使用这一算法，因为蝴蝶变换有一定的循环依赖性，很难并行优化。
@@ -345,13 +441,6 @@ static void matMultCPU_parallel(const float* a, const float* b, float* c, int n)
 ![](images/lab5_openmp.png)
 
 计算得加速比为 2.3 。
-
-### Cuda
-
-## Lab 6 - 还没想好
-
-
-
 
 ## Appendix
 仅以此记录一下自己被困扰了一天的问题。以下是我写的第一个测试OpenMP的C语言代码

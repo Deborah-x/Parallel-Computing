@@ -164,3 +164,11 @@ void quickSort(int *a, int sta, int end){
         quickSort(a, mid + 1, end);
     }
 }
+
+//输出数组
+void print(int *data, int n){
+    for(int i = 0; i < n; i++) {
+        printf("%d ", data[i]);
+    }
+    printf("\n");
+}
