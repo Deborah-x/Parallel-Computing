@@ -6,7 +6,102 @@
 ![](images/config1.png)
 ![](images/CPU.png)
 
-## 基于 KNN 的购物反馈预测的OpenMP优化
+## 图像缩放的 CUDA 优化
+### Introduction:
+图像缩放是图像处理中非常重要的一个环节。使用 CUDA 优化图像缩放的根本目的是加速图像处理。由于 CUDA 可以利用 GPU 的并行计算能力，因此可以在处理大量数据时提高计算速度。在图像缩放中，需要对每个像素进行计算，因此可以使用 CUDA 并行计算来加速这个过程。这样可以大大减少处理时间，提高图像处理效率。
+
+### Code Description:
+CPU 实现
+```C++
+void resizeImage(const Mat &_src, Mat &_dst, const Size &s )
+{
+	_dst = Mat::zeros(s, CV_8UC3);
+	double fRows = s.height / (float)_src.rows;	// 行缩放因子
+	double fCols = s.width / (float)_src.cols;	// 列缩放因子
+	int pX = 0;
+	int pY = 0;
+	for (int i = 0; i != _dst.rows; ++i){	// i 遍历目标图像的行
+		for (int j = 0; j != _dst.cols; ++j){	// j 遍历目标图像的列
+			pX = cvRound(i/(double)fRows);	// 缩放后的 i 对应原图像的位置
+			pY = cvRound(j/(double)fCols);	// 缩放后的 j 对应原图像的位置
+			if (pX < _src.rows && pX >= 0 && pY < _src.cols && pY >= 0){
+				// 对彩色图像的 RGB 三层分别处理
+				_dst.at<Vec3b>(i, j)[0] = _src.at<Vec3b>(pX, pY)[0];
+				_dst.at<Vec3b>(i, j)[1] = _src.at<Vec3b>(pX, pY)[1];
+				_dst.at<Vec3b>(i, j)[2] = _src.at<Vec3b>(pX, pY)[2];
+			}
+		}
+	}
+}
+```
+
+GPU 实现
+```C++
+void resizeImageGpu(const Mat &_src, Mat &_dst, const Size &s)
+{
+	_dst = Mat(s, CV_8UC3);
+	uchar *src_data = _src.data;
+	int width = _src.cols;
+	int height = _src.rows;
+	uchar *src_dev , *dst_dev;
+ 
+	cudaMalloc((void**)&src_dev, 3 * width*height * sizeof(uchar) );
+	cudaMalloc((void**)&dst_dev, 3 * s.width * s.height * sizeof(uchar));
+	cudaMemcpy(src_dev, src_data, 3 * width*height * sizeof(uchar), cudaMemcpyHostToDevice);
+ 
+	double fRows = s.height / (float)_src.rows;
+	double fCols = s.width / (float)_src.cols;
+	int src_step = _src.step;
+	int dst_step = _dst.step;
+ 
+	dim3 grid(s.height, s.width);
+	kernel << < grid, 1 >> >(src_dev, dst_dev, src_step, dst_step, height, width, s.height, s.width);
+ 
+	cudaMemcpy(_dst.data, dst_dev, 3 * s.width * s.height * sizeof(uchar), cudaMemcpyDeviceToHost);
+}
+
+__global__ void kernel(uchar* _src_dev, uchar * _dst_dev, int _src_step, int _dst_step ,
+	int _src_rows, int _src_cols, int _dst_rows, int _dst_cols)
+{
+	// 使用多 block 并行程序
+	int i = blockIdx.x;
+	int j = blockIdx.y;
+ 
+	double fRows = _dst_rows / (float)_src_rows;
+	double fCols = _dst_cols / (float)_src_cols;
+ 
+	int pX = 0;
+	int pY = 0;
+ 
+	pX = (int)(i / fRows);
+	pY = (int)(j / fCols);
+	if (pX < _src_rows && pX >= 0 && pY < _src_cols && pY >= 0){
+		*(_dst_dev + i*_dst_step + 3 * j + 0) = *(_src_dev + pX*_src_step + 3 * pY);
+		*(_dst_dev + i*_dst_step + 3 * j + 1) = *(_src_dev + pX*_src_step + 3 * pY + 1);
+		*(_dst_dev + i*_dst_step + 3 * j + 2) = *(_src_dev + pX*_src_step + 3 * pY + 2);
+	
+	}
+ 
+}
+```
+
+### Results and Analysis:
+输出结果为
+![](images/resize.png)
+计算得加速比为 17.64 。
+
+当我们将放大倍数从 50 减为 20 时，输出为
+![](images/resize_20.png)
+计算得加速比为 0.97 。
+
+当我们继续降低放大倍数到 2 时，输出为
+![](images/resize_2.png)
+计算得加速比为 0.33 。
+
+在这种情况下，使用 GPU 反而会减慢处理速度，因为把数据从内存中复制到 GPU 所花费的时间比使用 GPU 节省的时间还要多。我们可以得出一个结论：当放大倍数较小(<20)时，使用 CPU 更节省时间；当放大倍数较大(>20)时，使用 GPU 更节省时间。
+
+
+## 基于 KNN 的购物反馈预测的 OpenMP 优化
 ### Introduction:
 选择这个题目是受到上学期《机器学习》课程大作业的启发，课程主页[https://miralab.ai/course/ml_2022fall/](https://miralab.ai/course/ml_2022fall/)中有项目要求和数据集描述，由于提供的原始数据集数据量巨大
 （87766*15，数据条数为87766条，特征空间为15维），而 knn 算法必须计算每个点与其他点之间的距离以求得最近 k 个点的 label 来预测自己的 label，这就导致运行完整个程序需要花费很多时间。因为距离计算之间相对独立，所以在这里我可以利用 OpenMP 并行很多循环处理和矩阵乘法操作，有效的降低了程序运行所需时间。

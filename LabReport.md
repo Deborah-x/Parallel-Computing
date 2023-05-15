@@ -442,6 +442,40 @@ __global__ void matrixMulGlobalKernel(int* pfMatrixA, int* pfMatrixB, int* pfMat
 
 计算得加速比为 2.3 。
 
+### Cuda
+代码实现：
+
+```C
+// 蝴蝶操作, 输出结果直接覆盖原存储单元的数据, factor是旋转因子
+__device__ void Bufferfly(Complex *a, Complex *b, Complex factor) {
+    Complex a1 = (*a) + factor * (*b);
+    Complex b1 = (*a) - factor * (*b);
+    *a = a1;
+    *b = b1;
+}
+
+__global__ void FFT(Complex nums[], Complex result[], int n, int bits) {
+    int tid = threadIdx.x + blockDim.x * blockIdx.x;
+    if (tid >= n) return;
+    for (int i = 2; i < 2 * n; i *= 2) {
+        if (tid % i == 0) {
+            int k = i;
+            if (n - tid < k) k = n - tid;
+            for (int j = 0; j < k / 2; ++j) {
+                Bufferfly(&nums[BinaryReverse(tid + j, bits)], &nums[BinaryReverse(tid + j + k / 2, bits)], Complex::W(k, j));
+            }
+        }
+        __syncthreads();
+    }
+    result[tid] = nums[BinaryReverse(tid, bits)];
+}
+```
+
+输出结果为
+![](images/lab4_cuda.png)
+
+计算得加速比为: 4.29 。
+
 ## Appendix
 仅以此记录一下自己被困扰了一天的问题。以下是我写的第一个测试OpenMP的C语言代码
 
