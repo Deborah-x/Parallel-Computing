@@ -1,0 +1,29 @@
+﻿生成启动时间为 2023/4/5 21:18:43。
+     1>项目“c:\Users\administrator\documents\visual studio 2015\Projects\matlab_sar\matlab_sar\matlab_sar.vcxproj”在节点 2 上(Rebuild 个目标)。
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Yc"stdafx.h" /Fp"Debug\matlab_sar.pch" /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt stdafx.cpp
+         stdafx.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Yu"stdafx.h" /Fp"Debug\matlab_sar.pch" /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt fft_1d.cpp matlab_sar.cpp sar.cpp
+         sar.cpp
+     1>c:\users\administrator\documents\visual studio 2015\projects\matlab_sar\matlab_sar\sar.cpp(2): warning C4627: “#include <math.h>”: 在查找预编译头使用时跳过
+         c:\users\administrator\documents\visual studio 2015\projects\matlab_sar\matlab_sar\sar.cpp(2): note: 将指令添加到“stdafx.h”或重新生成预编译头
+     1>c:\users\administrator\documents\visual studio 2015\projects\matlab_sar\matlab_sar\sar.cpp(3): warning C4627: “#include <stdlib.h>”: 在查找预编译头使用时跳过
+         c:\users\administrator\documents\visual studio 2015\projects\matlab_sar\matlab_sar\sar.cpp(3): note: 将指令添加到“stdafx.h”或重新生成预编译头
+     1>c:\users\administrator\documents\visual studio 2015\projects\matlab_sar\matlab_sar\sar.cpp(4): warning C4627: “#include "fft_1d.h"”: 在查找预编译头使用时跳过
+         c:\users\administrator\documents\visual studio 2015\projects\matlab_sar\matlab_sar\sar.cpp(4): note: 将指令添加到“stdafx.h”或重新生成预编译头
+     1>c:\users\administrator\documents\visual studio 2015\projects\matlab_sar\matlab_sar\sar.cpp(280): fatal error C1010: 在查找预编译头时遇到意外的文件结尾。是否忘记了向源中添加“#include "stdafx.h"”?
+         matlab_sar.cpp
+         fft_1d.cpp
+     1>c:\users\administrator\documents\visual studio 2015\projects\matlab_sar\matlab_sar\fft_1d.cpp(1): warning C4627: “#include "fft_1d.h"”: 在查找预编译头使用时跳过
+         c:\users\administrator\documents\visual studio 2015\projects\matlab_sar\matlab_sar\fft_1d.cpp(1): note: 将指令添加到“stdafx.h”或重新生成预编译头
+     1>c:\users\administrator\documents\visual studio 2015\projects\matlab_sar\matlab_sar\fft_1d.cpp(3): warning C4627: “#include <string.h>”: 在查找预编译头使用时跳过
+         c:\users\administrator\documents\visual studio 2015\projects\matlab_sar\matlab_sar\fft_1d.cpp(3): note: 将指令添加到“stdafx.h”或重新生成预编译头
+     1>c:\users\administrator\documents\visual studio 2015\projects\matlab_sar\matlab_sar\fft_1d.cpp(4): warning C4627: “#include <math.h>”: 在查找预编译头使用时跳过
+         c:\users\administrator\documents\visual studio 2015\projects\matlab_sar\matlab_sar\fft_1d.cpp(4): note: 将指令添加到“stdafx.h”或重新生成预编译头
+     1>c:\users\administrator\documents\visual studio 2015\projects\matlab_sar\matlab_sar\fft_1d.cpp(222): fatal error C1010: 在查找预编译头时遇到意外的文件结尾。是否忘记了向源中添加“#include "stdafx.h"”?
+         正在生成代码...
+     1>已完成生成项目“c:\Users\administrator\documents\visual studio 2015\Projects\matlab_sar\matlab_sar\matlab_sar.vcxproj”(Rebuild 个目标)的操作 - 失败。
+
+生成失败。
+
+已用时间 00:00:01.74

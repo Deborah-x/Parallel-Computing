@@ -1,0 +1,39 @@
+﻿生成启动时间为 2023/4/6 23:37:42。
+     1>项目“C:\Users\Administrator\Documents\Visual Studio 2015\Projects\matlab_sar\matlab_sar\matlab_sar.vcxproj”在节点 2 上(Build 个目标)。
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I..\\matlab_sar /IC:\opencv\build\include /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D NDEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Yu"stdafx.h" /Fp"x64\Release\matlab_sar.pch" /Fo"x64\Release\\" /Fd"x64\Release\vc140.pdb" /Gd /TP /errorReport:prompt sar.cpp
+         sar.cpp
+     1>sar.cpp(43): warning C4305: “初始化”: 从“double”到“float”截断
+     1>sar.cpp(52): warning C4244: “初始化”: 从“float”转换到“int”，可能丢失数据
+     1>sar.cpp(53): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+     1>sar.cpp(77): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+     1>sar.cpp(81): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+     1>sar.cpp(110): warning C4244: “参数”: 从“float”转换到“size_t”，可能丢失数据
+     1>sar.cpp(122): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+     1>sar.cpp(123): warning C4554: “&”: 检查运算符优先级可能存在的错误；使用圆括号阐明优先级
+     1>sar.cpp(151): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+     1>sar.cpp(152): warning C4554: “&”: 检查运算符优先级可能存在的错误；使用圆括号阐明优先级
+     1>sar.cpp(153): warning C4554: “&”: 检查运算符优先级可能存在的错误；使用圆括号阐明优先级
+     1>sar.cpp(206): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+     1>sar.cpp(230): warning C4244: “初始化”: 从“float”转换到“int”，可能丢失数据
+     1>sar.cpp(236): warning C4244: “初始化”: 从“float”转换到“int”，可能丢失数据
+     1>sar.cpp(253): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+     1>sar.cpp(317): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+     1>sar.cpp(317): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Administrator\Documents\Visual Studio 2015\Projects\matlab_sar\x64\Release\matlab_sar.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:C:\opencv\build\x64\vc14\lib /LIBPATH:"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\lib\x64" opencv_world340.lib cublas.lib cuda.lib cudadevrt.lib cudart.lib cudart_static.lib cufft.lib cufftw.lib curand.lib cusolver.lib cusparse.lib nppc.lib nppial.lib nppicc.lib nppicom.lib nppidei.lib nppif.lib nppig.lib nppim.lib nppist.lib nppisu.lib nppitc.lib npps.lib nvblas.lib nvgraph.lib nvml.lib nvrtc.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"C:\Users\Administrator\Documents\Visual Studio 2015\Projects\matlab_sar\x64\Release\matlab_sar.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG:incremental /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Administrator\Documents\Visual Studio 2015\Projects\matlab_sar\x64\Release\matlab_sar.lib" /MACHINE:X64 x64\Release\cuda.cu.obj
+         x64\Release\fft_1d.obj
+         x64\Release\matlab_sar.obj
+         x64\Release\sar.obj
+         x64\Release\stdafx.obj
+         正在生成代码
+         3 of 213 functions ( 1.4%) were compiled, the rest were copied from previous compilation.
+           0 functions were new in current compilation
+           3 functions had inline decision re-evaluated but remain unchanged
+         已完成代码的生成
+         matlab_sar.vcxproj -> C:\Users\Administrator\Documents\Visual Studio 2015\Projects\matlab_sar\x64\Release\matlab_sar.exe
+     1>已完成生成项目“C:\Users\Administrator\Documents\Visual Studio 2015\Projects\matlab_sar\matlab_sar\matlab_sar.vcxproj”(Build 个目标)的操作。
+
+已成功生成。
+
+已用时间 00:00:02.54
