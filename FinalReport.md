@@ -186,7 +186,13 @@ nvcc cuda.cu sar.cpp -o output
 ```
 
 ### Results and Analysis:
-输出结果为
+输入雷达信号
+![](images/lab6_input.png)
+
+处理后结果
+![](images/lab6_output.png)
+
+输出时间
 ![](images/lab6_radar.png)
 
 计算得加速比为 70.87。
