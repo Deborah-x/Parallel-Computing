@@ -15,6 +15,19 @@
 
 CUDA（Compute Unified Device Architecture），是显卡厂商NVIDIA推出的运算平台。 CUDA™是一种由NVIDIA推出的通用并行计算架构，该架构使GPU能够解决复杂的计算问题。 它包含了CUDA指令集架构（ISA）以及GPU内部的并行计算引擎。 开发人员可以使用C语言来为CUDA™架构编写程序，所编写出的程序可以在支持CUDA™的处理器上以超高性能运行。
 
+下面简单介绍一下我采用的 SAR 算法：
+
+SAR（Synthetic Aperture Radar，合成孔径雷达）是一种主动雷达成像技术，可通过发送雷达波并接收回波来获取地表信息。SAR通过接收多次回波并对其进行处理，可以得到高分辨率、大覆盖范围的图像。SAR技术主要应用于军事、航空航天、地质勘探、海洋监测、环境监测等领域。
+
+SAR 算法是用于处理 SAR 图像的一种数学算法，主要包括以下几个步骤：
+
+1. 前向处理：将雷达波信号通过FFT等算法转换为频域信号，再进行多普勒处理和相位校正，得到经过多次回波后的综合回波信号。
+2. 反向处理：将综合回波信号转换为时域信号，对其进行去斑点滤波、熵最大化等处理，得到高质量的SAR图像。
+3. 影像重构：对SAR图像进行处理，包括多普勒校正、辐射定标、几何校正等，得到地物信息更加准确的图像。
+4. SAR 算法的核心是信号处理，包括时域信号处理和频域信号处理。在时域信号处理中，常用的算法包括去斑点滤波、图像熵最大化、小波变换等。在频域信号处理中，常用的算法包括FFT、快速卷积、自适应滤波等。
+
+SAR算法的优点在于可以获得高分辨率、大覆盖范围的图像，对于地表信息的探测能力强。同时，SAR技术还具有夜间、阴天、云层遮挡等特点，可以适用于多种环境下的地表监测和探测。
+
 ### Code Description:
 雷达信号处理的 CPU 实现：
 ```C++
@@ -37,9 +50,6 @@ for (int i = 0; i < Na; i++) {
 				float rd_im = SAR2[(y *(int)(Nfast*L) + x) * 2 + 1];
 
 				float a = 4 * pi*fc / c*Rt;
-				//cos(a) + sin(a);
-				//exp(1j * 4 * pi*fc / c*Rt);
-				//rd(m) = SAR2(m + Mslow / 32 * (k - 1), nr(m));
 
 				sum_re += rd_re *cos(a) - rd_im *sin(a);
 				sum_im += rd_re *sin(a) + rd_im *cos(a);
@@ -80,9 +90,6 @@ extern "C" void generate_vec_gpu(float *SAR2, float  * ta, float * Az, float *Rg
 	float Fr, float L, float NFast,
 	int Na , int fL ,int mL)
 {
-	//dim3 blockSize(128);
-	//dim3 gridSize((imgH * imgW + blockSize.x - 1) / blockSize.x);
-
 	int in_width = fL * 8;
 	int in_height = mL;
 	int in_size = in_width *in_height * 8;
@@ -184,6 +191,10 @@ nvcc cuda.cu sar.cpp -o output
 
 计算得加速比为 70.87。
 
+SAR4 数组中存储了滤波后的图像信息，在加上对 SAR4 的输出之后重新运行一次
+![](images/lab6_sar.png)
+我们可以看到 CPU 和 GPU 的运行结果是几乎完全一样的，从而证明了我们的优化是建立在正确性基础上的。
+
 ### Conclusion:
 通过 GPU 和 CPU 的耗时比较，我们发现 GPU 在并行计算中优势明显。虽然比起其他同学加速比一百多的加速比我的优化效果略微逊色，但是我的项目更偏向于工业界，具有实际作用。可以想象，在军事和自动驾驶领域，如果雷达检测延时大，其后果不可设想，所以我认为我做的这个项目是有重要意义的，同时在之后我也会从更多方面来优化程序，进一步提高算法的加速比。
 
@@ -273,9 +284,7 @@ __global__ void kernel(uchar* _src_dev, uchar * _dst_dev, int _src_step, int _ds
 		*(_dst_dev + i*_dst_step + 3 * j + 0) = *(_src_dev + pX*_src_step + 3 * pY);
 		*(_dst_dev + i*_dst_step + 3 * j + 1) = *(_src_dev + pX*_src_step + 3 * pY + 1);
 		*(_dst_dev + i*_dst_step + 3 * j + 2) = *(_src_dev + pX*_src_step + 3 * pY + 2);
-	
 	}
- 
 }
 ```
 这段代码是对于图像进行缩放操作的 CUDA 优化实现。它可以将一个输入的图像按照指定的尺寸进行缩放，并将结果存储到输出图像中。

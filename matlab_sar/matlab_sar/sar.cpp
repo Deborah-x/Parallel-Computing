@@ -65,7 +65,7 @@ int CFft1::get_computation_layers(int IN num)
 	 Complex         *Weights = new Complex[vecLen];	
 	 Complex         *X = new Complex[vecLen];	
 	 int                   *pnInvBits = new int[vecLen]; 
-	 memcpy(pVec, inVec, vecLen*sizeof(Complex)); 	// ����Ȩ������	
+	 memcpy(pVec, inVec, vecLen*sizeof(Complex)); 
 	 float fixed_factor = (-2 * PI) / vecLen;
 	 for (int i = 0; i < vecLen / 2; i++) 
 	 {		
@@ -78,7 +78,7 @@ int CFft1::get_computation_layers(int IN num)
 		 Weights[i].rl = -(Weights[i - vecLen / 2].rl);	
 		 Weights[i].im = -(Weights[i - vecLen / 2].im);
 	 } 
-	 int r = get_computation_layers(vecLen); 	// ���㵹��λ��	
+	 int r = get_computation_layers(vecLen); 		
 	 int index = 0;	
 	 for (int i = 0; i < vecLen; i++) 
 	 {		
@@ -90,7 +90,7 @@ int CFft1::get_computation_layers(int IN num)
 		 pnInvBits[i] = index;		
 		 X[i].rl = pVec[pnInvBits[i]].rl;
 		 X[i].im = pVec[pnInvBits[i]].im;	
-	 } 	// ������ٸ���Ҷ�任	
+	 } 	
 
 	 for (int L = 1; L <= r; L++) 
 	 {		
@@ -156,7 +156,7 @@ int CFft1::get_computation_layers(int IN num)
 	 {		
 		 W_rl[i] = -(W_rl[i - len / 2]);	
 		 W_im[i] = -(W_im[i - len / 2]);	
-	 } 	// ʱ������д��X1
+	 } 	
 	 
 	 for (int i = 0; i < len; i++) 
 	 {		
@@ -203,7 +203,7 @@ int CFft1::get_computation_layers(int IN num)
 		 }		
 		 memcpy(X_rl, X2_rl, sizeof(float)*len);	
 		 memcpy(X_im, X2_im, sizeof(float)*len);	
-	 } 	// λ�뵹��
+	 } 	
 	 int index = 0;
 	 for (int i = 0; i < len; i++) 
 	 {		
@@ -293,36 +293,33 @@ void sar_test(float c, float fc, float vr, float H, float D, float Rg0, float Rg
 	Fr = 1.0f / ((2 * Rmax / c + Tw - 2 * Rmin / c) / (int)Nfast); 
 
 
-	float Az0 = 10240; //%��λ���������ʲô�趨��RD�㷨�о�û���趨
+	float Az0 = 10240; 
 	float AL = 2048;
 	float Azmin = Az0 - AL / 2;
 	float Azmax = Az0 + AL / 2;
-	//% ��λά / ��ʱ��ά����
-	float Ka = -2 * vr*vr / lambda / R0;                // % ��ʱ��ά��Ƶ��
-	float	Ba = fabs(Ka*Ta);                        //% ��ʱ��ά����
-	float	PRF = 1.2*Ba;                           //% �����ظ�Ƶ��
-	float	Mslow = ceil((Azmax - Azmin + La) / vr*PRF);  //% ��ʱ��ά���� / ������
+	float Ka = -2 * vr*vr / lambda / R0;                
+	float	Ba = fabs(Ka*Ta);                       
+	float	PRF = 1.2*Ba;                           
+	float	Mslow = ceil((Azmax - Azmin + La) / vr*PRF);  
 	Mslow =ceil(log2(Mslow));
-	//Mslow = Mslow *Mslow;              //% ������ʱ��άFFT�ĵ���
+	//Mslow = Mslow *Mslow;             
 	Mslow = pow(2, Mslow);
 	float *ta = (float *)malloc((int)Mslow * 4);
 	linspace((Azmin - La / 2) / vr, (Azmax + La / 2) / vr, ta, (int)Mslow);
 	// for (int i = 0; i < 10; i++) {
-	// 	printf(" ta[ %d ] = %f \n ", i, ta[i]);
+	// 	printf("ta[ %d ] = %f\n ", i, ta[i]);
 	// }
 
-	PRF = 1 / ((Azmax - Azmin + La) / vr / Mslow);    //% ����ʱ��άFFT��������������ظ�Ƶ��
+	PRF = 1 / ((Azmax - Azmin + La) / vr / Mslow);    
 		
-	float	Dr = c / 2 / Br;                            //% ����ֱ���
-	float	Da = D / 2;                              // % ��λ�ֱ���
+	float	Dr = c / 2 / Br;                            
+	float	Da = D / 2;                              
 
-		//%% Ŀ�����
-	int	Ntarget = 1;                            //% Ŀ������
-	float	Ptarget[3] = { Az0 - 10, Rg0 - 20, 1 };           // % Ŀ��λ��\ɢ����Ϣ
+	int	Ntarget = 1;                            
+	float	Ptarget[3] = { Az0 - 10, Rg0 - 20, 1 };           
 
 	float sigmak = Ptarget[2];
 
-	// printf("dddddddddddddddddddddddddddd \n");
 	float *Srnm = (float *)malloc(Mslow *Nfast *8);
 	for (int i = 0; i < Mslow; i++) {
 	
@@ -359,11 +356,10 @@ void sar_test(float c, float fc, float vr, float H, float D, float Rg0, float Rg
 	cv::imshow("out_satr", out_Srnm);
 	cv::waitKey();
 #endif
-	// printf("sssssssssssssssssssssssssss\n");
 	float *hrc = (float *)malloc((int)Nfast * 8);
 	Complex *inVec = new Complex[(int)Nfast];
 	for (int i = 0; i < Nfast; i++) {
-		float	thr = tr[i] - 2 * Rmin / c; //%�������źŷ���ʱ�����ɵ�ʱ������
+		float	thr = tr[i] - 2 * Rmin / c; 
 		float a =pi*Kr*thr*thr;
 		hrc[2 * i] = cos(a) *(0 < thr&thr < Tw);
 		hrc[2 * i +1] = sin(a) *(0 < thr&thr < Tw);
@@ -376,7 +372,6 @@ void sar_test(float c, float fc, float vr, float H, float D, float Rg0, float Rg
 	Complex *fft_out = new Complex[(int)Nfast];
 	CFft1 t;
 	t.fft(inVec, (int)Nfast, outVec);
-	// printf("kkkkkkkkkkkkkkkkkkkkkk\n");
 	float  *SAR1 = (float *)malloc((int)Nfast *(int)Mslow*8);
 	for (int i = 0; i < Mslow; i++) {
 		for (int j = 0; j < Nfast; j++) {
@@ -396,7 +391,6 @@ void sar_test(float c, float fc, float vr, float H, float D, float Rg0, float Rg
 			SAR1[(i *(int)Nfast + j) * 2 + 1] = outVec_2[j].im;
 		}
 	}
-	// printf("dddddddddddddddddddddddd\n");
 
 #if 0
 	cv::Mat out_SAR1(Nfast, Nfast, CV_32FC1);
@@ -408,12 +402,12 @@ void sar_test(float c, float fc, float vr, float H, float D, float Rg0, float Rg
 	cv::imshow("out_satr", out_SAR1);
 	cv::waitKey();
 #endif
-	/*L = 8;%��ֵ����
+	/*L = 8;
 trs = linspace(min(tr),max(tr),L*Nfast);
 SAR1f = fft(SAR1,Nfast,2);
 
 SAR11f = [SAR1f(:,1:floor((Nfast+1)/2)),zeros(Mslow,(L-1)*Nfast),...
-    SAR1f(:,floor((Nfast+1)/2)+1:end)];%��ֵ����߲�����
+    SAR1f(:,floor((Nfast+1)/2)+1:end)];
 SAR2 = ifft(SAR11f,L*Nfast,2);*/
 
 	int L = 8;
@@ -426,7 +420,6 @@ SAR2 = ifft(SAR11f,L*Nfast,2);*/
 		trs_min = trs_min < trs[i] ? trs_min : trs[i];
 	}
 
-	// printf("2222222222222222222222222\n");
 	float  *SAR2 = (float *)malloc((int)Nfast *8 *(int)Mslow * 8);
 	Complex *SAR1f_tmp = new Complex[(int)Nfast *8];
 	Complex *SAR1f_tmp_out = new Complex[(int)Nfast * 8];
@@ -477,9 +470,6 @@ SAR2 = ifft(SAR11f,L*Nfast,2);*/
 	cv::waitKey();
 	}
 #endif
-	// printf("44444444444444444444444444\n");
-	//%% �����ʷ�
-	//% ̽�ⷶΧ��ɢ��
 	float *Rg = (float *)malloc(1001 *4);
 	float *Az = (float *)malloc(1001 * 4);
 	for (int i = 0; i < 1001; i++) {
@@ -494,55 +484,65 @@ SAR2 = ifft(SAR11f,L*Nfast,2);*/
 	gettimeofday( &start, NULL );
 
 	
-	// printf("55555555 trs_min =%f Nfast =%f (Nfast*L) =%f \n", trs_min, (Nfast*L), (Nfast));
-		for (int i = 0; i < Na; i++) {
-			for (int j = 0; j < Nr; j++) {		
-				float sum_re = 0.0f;
-				float sum_im = 0.0f;
-				for (int k = 0; k < 32; k++) {
-					for (int m = 0; m < 32; m++) {
-						float tav = (vr *ta[32 * k + m] - Az[i]);
-						float Rt = sqrt(tav *tav + Rg[j] * Rg[j] + H*H);
+	// printf("trs_min =%f Nfast =%f (Nfast*L) =%f \n", trs_min, (Nfast*L), (Nfast));
+	for (int i = 0; i < Na; i++) {
+		for (int j = 0; j < Nr; j++) {		
+			float sum_re = 0.0f;
+			float sum_im = 0.0f;
+			for (int k = 0; k < 32; k++) {
+				for (int m = 0; m < 32; m++) {
+					float tav = (vr *ta[32 * k + m] - Az[i]);
+					float Rt = sqrt(tav *tav + Rg[j] * Rg[j] + H*H);
 
-						float tau = 2 * Rt / c;
-						int nr = std::min(round((tau - trs_min)*Fr*L) ,(float)L*(int)Nfast);
+					float tau = 2 * Rt / c;
+					int nr = std::min(round((tau - trs_min)*Fr*L) ,(float)L*(int)Nfast);
 
-						int y = m + 32 * k;
-						int x = nr -1;
+					int y = m + 32 * k;
+					int x = nr -1;
 
-						float rd_re = SAR2[(y *(int)(Nfast*L) + x) * 2];
-						float rd_im = SAR2[(y *(int)(Nfast*L) + x) * 2 + 1];
+					float rd_re = SAR2[(y *(int)(Nfast*L) + x) * 2];
+					float rd_im = SAR2[(y *(int)(Nfast*L) + x) * 2 + 1];
 
-						float a = 4 * pi*fc / c*Rt;
-						//cos(a) + sin(a);
-						//exp(1j * 4 * pi*fc / c*Rt);
-						//rd(m) = SAR2(m + Mslow / 32 * (k - 1), nr(m));
+					float a = 4 * pi*fc / c*Rt;
+					//cos(a) + sin(a);
+					//exp(1j * 4 * pi*fc / c*Rt);
+					//rd(m) = SAR2(m + Mslow / 32 * (k - 1), nr(m));
 
-						sum_re += rd_re *cos(a) - rd_im *sin(a);
-						sum_im += rd_re *sin(a) + rd_im *cos(a);
+					sum_re += rd_re *cos(a) - rd_im *sin(a);
+					sum_im += rd_re *sin(a) + rd_im *cos(a);
 
-					}
 				}
-				SAR4[2 * (i * Na + j)] = sum_re;
-				SAR4[2 * (i * Na + j)+ 1] = sum_im;
-			
 			}
-	
+			SAR4[2 * (i * Na + j)] = sum_re;
+			SAR4[2 * (i * Na + j)+ 1] = sum_im;
+		
 		}
-gettimeofday( &end, NULL );
-float timeuse = 1000000 * ( end.tv_sec - start.tv_sec ) + end.tv_usec - start.tv_usec;
-printf("CPU Time: %f s\n" ,timeuse /1000000.0f);
 
-gettimeofday( &start, NULL );
-	generate_vec_gpu(SAR2, ta, Az, Rg, SAR4,
-					vr, H, fc, c, trs_min,
-					Fr, L, Nfast,
-					Na, Nfast, Nfast);
-gettimeofday( &end, NULL );					
- timeuse = 1000000 * ( end.tv_sec - start.tv_sec ) + end.tv_usec - start.tv_usec;
-printf("GPU Time: %f s\n" ,timeuse /1000000.0f);
+	}
+	gettimeofday( &end, NULL );
+	float timeuse = 1000000 * ( end.tv_sec - start.tv_sec ) + end.tv_usec - start.tv_usec;
+	printf("CPU Time: %f s\n" ,timeuse /1000000.0f);
+	printf("SAR4: ");
+	for(int i = 0; i < 20; i++) {
+		printf("%.2f ", SAR4[i]);
+	}
+	printf("\n");
 
-		// printf("777777777777777 trs_min =%f \n", trs_min);
+	gettimeofday( &start, NULL );
+		generate_vec_gpu(SAR2, ta, Az, Rg, SAR4,
+						vr, H, fc, c, trs_min,
+						Fr, L, Nfast,
+						Na, Nfast, Nfast);
+	gettimeofday( &end, NULL );					
+	timeuse = 1000000 * ( end.tv_sec - start.tv_sec ) + end.tv_usec - start.tv_usec;
+	printf("GPU Time: %f s\n" ,timeuse /1000000.0f);
+	printf("SAR4: ");
+	for(int i = 0; i < 20; i++) {
+		printf("%.2f ", SAR4[i]);
+	}
+	printf("\n");
+
+	// printf("trs_min =%f \n", trs_min);
 		//cv::Mat out(Na, Nr, CV_32FC1);
 		//for (int i = 0; i < Na; i++) {
 		//	for (int j = 0; j < Nr; j++) {
@@ -564,18 +564,14 @@ printf("GPU Time: %f s\n" ,timeuse /1000000.0f);
 int main()
 {
 	float c = 3e8;
-	float fc = 7.5e8;                               //% �ź���Ƶ
-	float lambda = c / fc;                         // % �ز�����
-		//% ƽ̨����
-	float vr = 100;                               //% SAR����ƽ̨�ٶ�
-	float	H = 0;                               //% ƽ̨�߶�
-		//%���߲���
-	float	D = 8;                                  //% ��λ�����߳���
+	float fc = 7.5e8;                               
+	float lambda = c / fc;                         
+	float vr = 100;                               
+	float	H = 0;                               
+	float	D = 8;                                  
 
-		//%% ��ʱ�����
-		//% ������Χ
-		float Rg0 = 20480;                            // % ���ĵؾ�
-		float RgL = 2048;                            // % ������
+	float Rg0 = 20480;                           
+	float RgL = 2048;                            
 	
 	sar_test( c,  fc,  vr,  H,  D,  Rg0,  RgL);
 	return 0;
