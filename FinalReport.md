@@ -217,6 +217,17 @@ void resizeImage(const Mat &_src, Mat &_dst, const Size &s )
 	}
 }
 ```
+这段代码实现了图像缩放的功能，将输入的图像 _src 按照指定的大小 s 进行缩放，结果保存在 _dst 中。具体实现过程为：
+
+首先，根据输入图像的尺寸 _src.rows 和 _src.cols 与目标尺寸 s 的比例计算出行列的缩放比例 fRows 和 fCols；
+
+然后，利用双重循环遍历目标图像 _dst 中的每个像素点，计算对应的在输入图像中的坐标 pX 和pY；
+
+接着，判断 pX 和 pY 是否在输入图像 _src 的范围内，如果在，就将输入图像 _src 对应的像素值复制到目标图像 _dst 中；
+
+最后，返回缩放后的图像 _dst。
+
+该代码中使用了 OpenCV 中的 Mat 类型表示图像，利用 at() 函数访问像素值。函数的输入参数包括输入图像 _src、目标图像 _dst 以及目标图像的大小 s。输出结果保存在 _dst 中。
 
 GPU 实现
 ```C++
@@ -267,6 +278,13 @@ __global__ void kernel(uchar* _src_dev, uchar * _dst_dev, int _src_step, int _ds
  
 }
 ```
+这段代码是对于图像进行缩放操作的 CUDA 优化实现。它可以将一个输入的图像按照指定的尺寸进行缩放，并将结果存储到输出图像中。
+
+函数 `resizeImageGpu()` 接收三个参数： 输入图像 _src、输出图像 _dst 以及目标尺寸 s。它首先创建一个与输出图像相同大小的空图像 _dst，并且使用 `cudaMalloc()` 函数在 GPU 上分配内存来存储输入图像 _src 和输出图像 _dst 的数据。然后使用 `cudaMemcpy()` 函数将输入图像 _src 的数据从主机内存复制到设备内存中。
+
+接下来是 CUDA 的主要部分。它定义了一个名为 `kernel()` 的 CUDA 函数，该函数使用多个 CUDA 线程在 GPU 上并行执行。该函数接收 8 个参数： 输入图像的设备指针 _src_dev、输出图像的设备指针 _dst_dev、输入图像的步长 _src_step 和输出图像的步长 _dst_step、输入图像的行数和列数 _src_rows 和 _src_cols 以及目标图像的行数和列数 _dst_rows 和 _dst_cols。在每个线程中，它根据目标图像的行数和列数计算了 fRows 和 fCols 的比例因子。然后，它计算出输入图像中与输出图像对应的像素坐标 pX 和 pY，并使用这些坐标从输入图像 _src 中复制相应的像素值到输出图像 _dst 中。
+
+在 `resizeImageGpu()`函数中，使用了 CUDA 的函数调用和 CUDA 核函数，这些代码可以通过编译器编译为在 GPU 上执行的代码。由于 CUDA 的并行执行模式，这种实现可以加速图像缩放的过程。而且，由于所有数据都在 GPU 上处理，因此它可以减少在主机和设备之间传输数据的开销，从而提高处理速度。
 
 ### Results and Analysis:
 输出结果为
